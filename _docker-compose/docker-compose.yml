@@ -27,9 +27,23 @@ services:
       context: ../backend # Set the build context to the backend folder
       dockerfile: Dockerfile # Use Dockerfile from the backend folder
     ports:
-      - "5000:5000" # Map port 5000 on the host to port 5000 in the container
+      - "8080:8080" # Map port 5000 on the host to port 5000 in the container
     volumes:
       - ../backend:/app # Mount the backend directory to `/app` in the container
     environment:
       FLASK_APP: app.py # Ensure this matches your Flask app entry point
       FLASK_ENV: development # Optional: Set development mode for Flask
+      FLASK_RUN_PORT: 8080
+  frontend:
+    build:
+      context: ../frontend # Diretório onde o Dockerfile está localizado
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Mapeia a porta 3000 do container para a porta 3000 do host
+    environment:
+      NODE_ENV: production # Define o ambiente como produção
+    env_file:
+      - ../frontend/.env
+    volumes:
+      - ../frontend/src:/app/src # Map only the source files
+      - /app/node_modules

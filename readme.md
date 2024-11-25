@@ -56,7 +56,6 @@ Aqui vao os pontos que sera avaliados no teste:
 - Fazer o deploy publico da aplicacao em qualquer servico que aceite as imagens docker (2 pontos)
 - Adicionar testes (unitarios ou end-to-end) (2 pontos)
 
-
 **Total: 4 pontos**
 
 ### Criterios tecnicos
@@ -73,3 +72,10 @@ Alem da avaliacao das funcionalidades do FE, tambem serao levados em consideraca
   - Clean Code
   - DRY
   - MVC
+
+# Notes
+
+To run:
+`npm i (inside frontend folder)`
+`create .env (copy from .env.example)`
+`docker-compose -f _docker-compose/docker-compose.yml up --build --force-recreate`
