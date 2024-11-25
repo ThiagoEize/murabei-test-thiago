@@ -135,7 +135,7 @@ def get_books_by_author_name(author_slug):
 
     # Execute a SELECT query to fetch all books by the given author
     cursor.execute(
-        'SELECT * FROM book WHERE author_slug = ?;', (author_slug,))
+        'SELECT book.* FROM book join author on book.author_id = author.id WHERE author.slug = ?;', (author_slug,))
     books = cursor.fetchall()
 
     # Convert the books data to a list of dictionaries
