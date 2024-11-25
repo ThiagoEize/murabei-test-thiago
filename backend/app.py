@@ -7,6 +7,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, 'db.sqlite')
 
 @app.route("/", methods=["GET"])
 def hello_world():
@@ -69,7 +71,7 @@ def create_book():
 
 
 def get_all_books(page=1, page_size=10):
-    conn = sqlite3.connect('db.sqlite')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Calculate the offset based on the page number and page size
@@ -100,7 +102,7 @@ def get_all_books(page=1, page_size=10):
 
 
 def get_authors():
-    conn = sqlite3.connect('db.sqlite')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Execute a SELECT query to fetch all authors
@@ -126,7 +128,7 @@ def get_authors():
 
 
 def get_books_by_author_name(author_slug):
-    conn = sqlite3.connect('db.sqlite')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Execute a SELECT query to fetch all books by the given author
@@ -156,7 +158,7 @@ def get_books_by_author_name(author_slug):
 
 
 def get_books_by_subject():
-    conn = sqlite3.connect('db.sqlite')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Execute a SELECT query to fetch all subjects, and the slug from the table subject
@@ -170,7 +172,7 @@ def get_books_by_subject():
 
 
 def get_books_by_subject_slug(subject):
-    conn = sqlite3.connect('db.sqlite')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     query = '''
@@ -205,7 +207,7 @@ def get_books_by_subject_slug(subject):
 
 
 def create_new_book(book_data):
-    conn = sqlite3.connect('db.sqlite')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Extract book data from the input
@@ -280,7 +282,7 @@ def update_book(book_id):
     synopsis = book_data.get('synopsis')
 
     # Connect to the database
-    conn = sqlite3.connect('db.sqlite')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Update the book record
@@ -302,7 +304,7 @@ def update_book(book_id):
 # DELETE /api/v1/books/<book_id> - deletes an existing book
 @app.route('/api/v1/books/<int:book_id>', methods=['DELETE'])
 def delete_book(book_id):
-    conn = sqlite3.connect('db.sqlite')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Check if the book exists
