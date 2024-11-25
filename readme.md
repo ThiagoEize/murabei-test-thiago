@@ -79,3 +79,28 @@ To run:
 `npm i (inside frontend folder)`
 `create .env (copy from .env.example)`
 `docker-compose -f _docker-compose/docker-compose.yml up --build --force-recreate`
+
+Deploy:
+https://murabei-test-7129057a6878.herokuapp.com/
+
+Sobre o projeto:
+
+Frontend:
+-Home:
+  -Breve descrição do app e links para as paginas de livros e authores
+-Autores:
+  -Lista os autores e permite localizar os livros do author utilizando a ação da tabela
+-Livros:
+  -Crud completo de livros através do botão de adicionar clientes e das ações da tabela
+    -Utilizado sempre dados da tabela autor para listagens e edições em vez do campo autor da tabela livro, utilizando da ligação entre as tabelas
+
+Backend:
+  -Adicionados campos nas listagens
+  -Corrigido metodo create books para fazer um autoincremento forçado do id
+  -Adicionado metodo para edição de livros
+  -Alterado metodo de localizar listar por slug, procurando o slug na tabela autores com um join e não o campo author_slug da tabela livro
+  
+P.S.1: O frontend foi feito em um repositorio separado e depois inserido na pasta frontend
+  -Se quiserem observar os commits olhar em: https://github.com/ThiagoEize/v0/
+  
+P.S.2: Por falta de tempo não implementei os testes, mas ainda posso implementar amanha
