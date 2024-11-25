@@ -1,10 +1,35 @@
+# version: "3.8"
+# services:
+#   # backend:
+#   # image: backend:latest # nomeie a imagem da forma que desejar
+#   # ports:
+#   #   - "5000:5000"
+#   # frontend:
+#   #   image: frontend:latest # nomeie a imagem da forma que desejar
+#   #   ports:
+#   #     - "3000:3000"
+#   backend:
+#     build:
+#       context: . # Context points to the directory containing the Dockerfile
+#       dockerfile: ../backend/Dockerfile
+#     ports:
+#       - "5000:5000" # Map port 5000 on the host to port 5000 in the container
+#     volumes:
+#       - .:/app # Mount the current directory to `/app` in the container
+#     environment:
+#       FLASK_APP: app.py # Ensure this matches your Flask app entry point
+#       FLASK_ENV: development # Optional: Set development mode for Flask
+
 version: "3.8"
 services:
   backend:
-    image: backend:latest # nomeie a imagem da forma que desejar
+    build:
+      context: ../backend # Set the build context to the backend folder
+      dockerfile: Dockerfile # Use Dockerfile from the backend folder
     ports:
-      - "5000:5000"
-  # frontend:
-  #   image: frontend:latest # nomeie a imagem da forma que desejar
-  #   ports:
-  #     - "3000:3000"
+      - "5000:5000" # Map port 5000 on the host to port 5000 in the container
+    volumes:
+      - ../backend:/app # Mount the backend directory to `/app` in the container
+    environment:
+      FLASK_APP: app.py # Ensure this matches your Flask app entry point
+      FLASK_ENV: development # Optional: Set development mode for Flask

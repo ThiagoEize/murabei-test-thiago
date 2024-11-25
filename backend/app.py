@@ -85,8 +85,10 @@ def get_all_books(page=1, page_size=10):
         book_dict = {
             'id': book[0],
             'title': book[1],
-            'author': book[2],
-            'biography': book[4]
+            'author_id': book[3],
+            'publisher': book[12],
+            'pages': book[17],
+            'synopsis': book[21],
         }
         book_list.append(book_dict)
 
@@ -139,10 +141,9 @@ def get_books_by_author_name(author_slug):
         book_dict = {
             'id': book[0],
             'title': book[1],
-            'author': book[2],
-            'biography': book[4],
-            'authors': book[5],
+            'author_id': book[3],
             'publisher': book[12],
+            'pages': book[17],
             'synopsis': book[21],
         }
         book_list.append(book_dict)
@@ -173,7 +174,7 @@ def get_books_by_subject_slug(subject):
     cursor = conn.cursor()
 
     query = '''
-    SELECT title, author, author_slug, author_bio, authors, publisher, synopsis
+    SELECT *
     FROM book
     WHERE subjects = ?
     '''
@@ -187,13 +188,12 @@ def get_books_by_subject_slug(subject):
 
     for book in books:
         book_dict = {
-            'title': book[0],
-            'author': book[1],
-            'slug': book[2],
-            'biography': book[3],
-            'authors': book[4],
-            'publisher': book[5],
-            'synopsis': book[6],
+            'id': book[0],
+            'title': book[1],
+            'author_id': book[3],
+            'publisher': book[12],
+            'pages': book[17],
+            'synopsis': book[21],
         }
         book_list.append(book_dict)
 
@@ -208,26 +208,32 @@ def create_new_book(book_data):
     conn = sqlite3.connect('db.sqlite')
     cursor = conn.cursor()
 
-    # Get the book data from the request body
+    # Extract book data from the input
     title = book_data['title']
-    author = book_data['author']
-    author_slug = book_data['author_slug']
-    author_bio = book_data['author_bio']
-    authors = book_data['authors']
     publisher = book_data['publisher']
     synopsis = book_data['synopsis']
+    author_id = book_data['author_id']
 
-    # Execute a query to create a new book
-    cursor.execute('INSERT INTO book (title, author, author_slug, author_bio, authors, publisher, synopsis) VALUES (?, ?, ?, ?, ?, ?, ?);',
-                   (title, author, author_slug, author_bio, authors, publisher, synopsis))
+    # Retrieve the current maximum id in the book table
+    cursor.execute('SELECT MAX(id) FROM book;')
+    max_id = cursor.fetchone()[0]
 
-    # Commit the changes to the database
+    # Calculate the next id
+    next_id = (max_id + 1) if max_id is not None else 1
+
+    # Insert the new book record with the calculated id
+    cursor.execute('''
+        INSERT INTO book (id, title, publisher, synopsis, author_id)
+        VALUES (?, ?, ?, ?, ?);
+    ''', (next_id, title, publisher, synopsis, author_id))
+
+    # Commit the transaction
     conn.commit()
 
     # Close the database connection
     conn.close()
 
-    # Return a message to the user
+    # Return a success message
     return {'message': 'Book created successfully.'}, 201
 
 
@@ -261,3 +267,55 @@ def create_new_book(book_data):
 #     return jsonify(book_list)
 
 # # GET /api/v1/authors
+
+# PUT /api/v1/books/<book_id> - updates an existing book
+@app.route('/api/v1/books/<int:book_id>', methods=['PUT'])
+def update_book(book_id):
+    # Get the book data from the request body
+    book_data = request.get_json()
+
+    # Extract fields from the request data
+    title = book_data.get('title')
+    publisher = book_data.get('publisher')
+    synopsis = book_data.get('synopsis')
+
+    # Connect to the database
+    conn = sqlite3.connect('db.sqlite')
+    cursor = conn.cursor()
+
+    # Update the book record
+    cursor.execute('''
+        UPDATE book
+        SET title = ?, publisher = ?, synopsis = ?, author_id = ?
+        WHERE id = ?;
+    ''', (title, publisher, synopsis, author_id, book_id))
+
+    # Commit the changes
+    conn.commit()
+
+    # Close the database connection
+    conn.close()
+
+    # Return a success message
+    return jsonify({'message': 'Book updated successfully.'}), 200
+    
+# DELETE /api/v1/books/<book_id> - deletes an existing book
+@app.route('/api/v1/books/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    conn = sqlite3.connect('db.sqlite')
+    cursor = conn.cursor()
+
+    # Check if the book exists
+    cursor.execute('SELECT * FROM book WHERE id = ?;', (book_id,))
+    book = cursor.fetchone()
+
+    if book:
+        # Book exists, proceed to delete
+        cursor.execute('DELETE FROM book WHERE id = ?;', (book_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({'message': 'Book deleted successfully.'}), 200
+    else:
+        # Book does not exist
+        conn.close()
+        return jsonify({'error': 'Book not found.'}), 404
