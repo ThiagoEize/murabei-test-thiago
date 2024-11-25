@@ -215,7 +215,7 @@ def create_new_book(book_data):
     # Extract book data from the input
     title = book_data['title']
     publisher = book_data['publisher']
-    synopsis = book_data['synopsis']
+    synopsis = book_data.get('synopsis', '')
     author_id = book_data['author_id']
 
     # Retrieve the current maximum id in the book table
@@ -279,9 +279,10 @@ def update_book(book_id):
     book_data = request.get_json()
 
     # Extract fields from the request data
-    title = book_data.get('title')
-    publisher = book_data.get('publisher')
-    synopsis = book_data.get('synopsis')
+    title = book_data['title']
+    publisher = book_data['publisher']
+    synopsis = book_data.get('synopsis', '')
+    author_id = book_data['author_id']
 
     # Connect to the database
     conn = sqlite3.connect(DB_PATH)
